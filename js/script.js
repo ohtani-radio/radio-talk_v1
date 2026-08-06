@@ -440,8 +440,14 @@ function initPlayButton() {
         const percent =
           (audio.currentTime / audio.duration) * 100;
 
-        if (percent >= 25 && !playbackMilestones[25]) {
+        if (
+          progressPercent >= 25 &&
+          !playbackMilestones[25] &&
+          typeof gtag === 'function'
+        ) {
           playbackMilestones[25] = true;
+
+          console.log('25%到達', progressPercent);
 
           gtag('event', 'audio_25', {
             audio_language: language
@@ -464,8 +470,14 @@ function initPlayButton() {
           });
         }
 
-        if (percent >= 95 && !playbackMilestones[95]) {
+        if (
+          progressPercent >= 95 &&
+          !playbackMilestones[95] &&
+          typeof gtag === 'function'
+        ) {
           playbackMilestones[95] = true;
+
+          console.log('95%到達', progressPercent);
 
           gtag('event', 'audio_complete', {
             audio_language: language
