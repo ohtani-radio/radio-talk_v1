@@ -103,6 +103,8 @@ function initPlayButton() {
   let activePlayButton = null;
   let activeTexts = null;
 
+  let hasSentAudioStart = false;
+
   const players = document.querySelectorAll('.custom-player');
 
   function updateMiniPlayerVisibility() {
@@ -246,6 +248,17 @@ function initPlayButton() {
           activeAudio = audio;
           activePlayButton = playButton;
           activeTexts = texts;
+
+          if (
+            !hasSentAudioStart &&
+            typeof gtag === 'function'
+          ) {
+            gtag('event', 'audio_start', {
+              audio_language: language
+            });
+
+            hasSentAudioStart = true;
+          }
 
           miniPlayer.hidden = false;
 
