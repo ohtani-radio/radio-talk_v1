@@ -105,6 +105,13 @@ function initPlayButton() {
 
   let hasSentAudioStart = false;
 
+  let playbackMilestones = {
+    25: false,
+    50: false,
+    75: false,
+    95: false
+  };
+
   const players = document.querySelectorAll('.custom-player');
 
   function updateMiniPlayerVisibility() {
@@ -261,6 +268,14 @@ function initPlayButton() {
             });
 
             hasSentAudioStart = true;
+
+            playbackMilestones = {
+              25: false,
+              50: false,
+              75: false,
+              95: false
+            };
+
           }
 
           miniPlayer.hidden = false;
@@ -418,6 +433,45 @@ function initPlayButton() {
 
           localStorage.removeItem(positionKey);
         }
+      }
+
+      if (audio.duration) {
+
+        const percent =
+          (audio.currentTime / audio.duration) * 100;
+
+        if (percent >= 25 && !playbackMilestones[25]) {
+          playbackMilestones[25] = true;
+
+          gtag('event', 'audio_25', {
+            audio_language: language
+          });
+        }
+
+        if (percent >= 50 && !playbackMilestones[50]) {
+          playbackMilestones[50] = true;
+
+          gtag('event', 'audio_50', {
+            audio_language: language
+          });
+        }
+
+        if (percent >= 75 && !playbackMilestones[75]) {
+          playbackMilestones[75] = true;
+
+          gtag('event', 'audio_75', {
+            audio_language: language
+          });
+        }
+
+        if (percent >= 95 && !playbackMilestones[95]) {
+          playbackMilestones[95] = true;
+
+          gtag('event', 'audio_complete', {
+            audio_language: language
+          });
+        }
+
       }
 
       updatePlayStatus();
