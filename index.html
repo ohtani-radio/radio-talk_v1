@@ -5,42 +5,85 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ラジオトーク</title>
-    <link rel="stylesheet" href="css/style.css?v=3">
+    <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 
-<div class="mini-player" hidden>
-    <div class="mini-player-info">
-        <span class="mini-language">JP 日本語</span>
-        <span class="mini-time">0:00 / 0:00</span>
+<body>
+
+    <div class="mini-player" hidden>
+
+    <div class="mini-player-panel">
+
+        <div class="mini-player-info">
+            <span class="mini-language">JP 日本語</span>
+            <span class="mini-time">0:00 / 0:00</span>
+        </div>
+
+        <div
+            class="mini-seek-bar"
+            role="slider"
+            aria-label="再生位置"
+        >
+            <div class="mini-seek-progress"></div>
+            <div class="mini-seek-knob"></div>
+        </div>
+
+        <div class="mini-player-controls">
+
+            <button
+                type="button"
+                class="mini-rewind"
+                aria-label="10秒戻る"
+            >
+                −10
+            </button>
+
+            <button
+                type="button"
+                class="mini-play"
+                aria-label="再生"
+            >
+                <svg
+                    class="mini-play-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M8 5.5v13l10-6.5z"></path>
+                </svg>
+
+                <svg
+                    class="mini-pause-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M7 5h4v14H7zM13 5h4v14h-4z"></path>
+                </svg>
+            </button>
+
+            <button
+                type="button"
+                class="mini-forward"
+                aria-label="10秒進む"
+            >
+                +10
+            </button>
+
+        </div>
+
     </div>
 
-    <div class="mini-seek-bar" role="slider" aria-label="再生位置">
-        <div class="mini-seek-progress"></div>
-        <div class="mini-seek-knob"></div>
-    </div>
+    <button
+        type="button"
+        class="mini-player-toggle"
+        aria-label="ミニプレーヤーを開く"
+        aria-expanded="false"
+    >
+        ▶
+    </button>
 
-    <div class="mini-player-controls">
-        <button type="button" class="mini-rewind" aria-label="10秒戻る">
-            −10
-        </button>
-
-        <button type="button" class="mini-play" aria-label="再生">
-            <svg class="mini-play-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 5.5v13l10-6.5z"></path>
-            </svg>
-
-            <svg class="mini-pause-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M7 5h4v14H7zM13 5h4v14h-4z"></path>
-            </svg>
-        </button>
-
-        <button type="button" class="mini-forward" aria-label="10秒進む">
-            +10
-        </button>
-    </div>
 </div>
 
-<body>
+</div>
     <header class="hero">
         <div class="mic">🎙️</div>
         <h1>ラジオトーク</h1>

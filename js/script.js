@@ -89,6 +89,7 @@ function initPlayButton() {
   };
 
   const miniPlayer = document.querySelector('.mini-player');
+  const miniToggle = document.querySelector('.mini-player-toggle');
   const miniLanguage = document.querySelector('.mini-language');
   const miniTime = document.querySelector('.mini-time');
   const miniPlayButton = document.querySelector('.mini-play');
@@ -332,6 +333,29 @@ function initPlayButton() {
       );
 
       updatePlayStatus();
+      function syncMiniPlayState() {
+        if (activeAudio !== audio) return;
+
+        const isPlaying =
+          !audio.paused &&
+          !audio.ended;
+
+        miniPlayButton.classList.toggle(
+          'is-playing',
+          isPlaying
+        );
+
+        miniPlayButton.setAttribute(
+          'aria-label',
+          isPlaying
+            ? texts.pause
+            : texts.play
+        );
+      }
+
+      audio.addEventListener('play', syncMiniPlayState);
+      audio.addEventListener('pause', syncMiniPlayState);
+      audio.addEventListener('ended', syncMiniPlayState);
 
     });
 
@@ -375,6 +399,8 @@ function initPlayButton() {
             completedKey,
             'true'
           );
+
+          localStorage.removeItem(positionKey);
         }
       }
 
@@ -394,7 +420,10 @@ function initPlayButton() {
         ? savedPosition / audio.duration
         : 0;
 
-      if (savedProgress >= 0.95) {
+      const isCompleted =
+        localStorage.getItem(completedKey) === 'true';
+
+      if (isCompleted) {
 
         audio.currentTime = 0;
 
@@ -634,6 +663,17 @@ function initPlayButton() {
 
     isMiniDragging = false;
 
+  });
+  miniToggle?.addEventListener('click', () => {
+    const isOpen = miniPlayer.classList.toggle('open');
+
+    miniToggle.setAttribute('aria-expanded', String(isOpen));
+    miniToggle.setAttribute(
+      'aria-label',
+      isOpen
+        ? 'ミニプレーヤーを閉じる'
+        : 'ミニプレーヤーを開く'
+    );
   });
 
 }
