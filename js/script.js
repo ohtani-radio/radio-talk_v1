@@ -253,8 +253,11 @@ function initPlayButton() {
             !hasSentAudioStart &&
             typeof gtag === 'function'
           ) {
+            console.log('audio_start送信', language);
+
             gtag('event', 'audio_start', {
-              audio_language: language
+              audio_language: language,
+              send_to: 'G-PGVD9L27LG'
             });
 
             hasSentAudioStart = true;
