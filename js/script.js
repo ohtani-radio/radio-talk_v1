@@ -421,9 +421,11 @@ function initPlayButton() {
       );
 
       if (audio.duration) {
-
         const progress =
           audio.currentTime / audio.duration;
+
+        const progressPercent =
+          progress * 100;
 
         if (progress >= 0.95) {
           localStorage.setItem(
@@ -433,12 +435,6 @@ function initPlayButton() {
 
           localStorage.removeItem(positionKey);
         }
-      }
-
-      if (audio.duration) {
-
-        const percent =
-          (audio.currentTime / audio.duration) * 100;
 
         if (
           progressPercent >= 25 &&
@@ -454,7 +450,11 @@ function initPlayButton() {
           });
         }
 
-        if (percent >= 50 && !playbackMilestones[50]) {
+        if (
+          progressPercent >= 50 &&
+          !playbackMilestones[50] &&
+          typeof gtag === 'function'
+        ) {
           playbackMilestones[50] = true;
 
           gtag('event', 'audio_50', {
@@ -462,7 +462,11 @@ function initPlayButton() {
           });
         }
 
-        if (percent >= 75 && !playbackMilestones[75]) {
+        if (
+          progressPercent >= 75 &&
+          !playbackMilestones[75] &&
+          typeof gtag === 'function'
+        ) {
           playbackMilestones[75] = true;
 
           gtag('event', 'audio_75', {
@@ -483,7 +487,6 @@ function initPlayButton() {
             audio_language: language
           });
         }
-
       }
 
       updatePlayStatus();
