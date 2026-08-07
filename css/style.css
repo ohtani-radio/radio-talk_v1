@@ -664,13 +664,14 @@ body {
     grid-row: 2;
 
     display: grid;
-    grid-template-columns: 1fr 40px 1fr;
+    grid-template-columns: 44px 40px 44px;
+    justify-content: center;
     align-items: center;
     justify-items: center;
 
     width: 100%;
 
-    gap: 3px;
+    gap: 15px;
 
     margin-top: -8px;
 
@@ -688,7 +689,7 @@ body {
 .mini-forward {
     min-width: 36px;
     padding: 3px;
-    font-size: 12px;
+    font-size: 15px;
     font-weight: 700;
 
 }

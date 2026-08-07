@@ -360,8 +360,6 @@ function initPlayButton() {
 
         try {
 
-          showAudioMessage('loading', texts.loading);
-
           await audio.play();
 
           activeAudio = audio;
