@@ -746,3 +746,26 @@ body {
         padding-bottom: 0;
     }
 }
+
+.audio-message {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.audio-message[hidden] {
+    display: none;
+}
+
+.audio-message[data-type="loading"] {
+    background: #eef4fb;
+    color: #35536f;
+}
+
+.audio-message[data-type="error"] {
+    background: #fff0f0;
+    color: #9a2f2f;
+    border: 1px solid #f0caca;
+}

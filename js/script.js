@@ -29,8 +29,20 @@ async function loadText(path) {
 }
 
 async function init() {
-  try { document.getElementById('theme-title').textContent = (await loadText('text/title.txt')).trim(); }
-  catch { document.getElementById('theme-title').textContent = 'テーマを読み込めませんでした'; }
+  try {
+    const themeTitle = (await loadText('text/title.txt')).trim();
+
+    document.getElementById('theme-title').textContent = themeTitle;
+
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: themeTitle,
+        artist: 'ラジオトーク'
+      });
+    }
+  } catch {
+    document.getElementById('theme-title').textContent = 'テーマを読み込めませんでした';
+  }
 
   document.querySelectorAll('.script-box').forEach(async box => {
     try { box.innerHTML = formatText(await loadText(box.dataset.text)); }
@@ -62,13 +74,17 @@ function formatTime(seconds) {
 
 function initPlayButton() {
 
+  const episodeId = document.body.dataset.episodeId;
+
   const statusTexts = {
     ja: {
       unplayed: '未再生',
       playing: '再生途中',
       completed: '再生済み',
       play: '再生',
-      pause: '一時停止'
+      pause: '一時停止',
+      loading: '音声を読み込んでいます…',
+      error: '音声を再生できませんでした。通信環境を確認して、もう一度お試しください。'
     },
 
     vi: {
@@ -76,7 +92,9 @@ function initPlayButton() {
       playing: 'Đang nghe',
       completed: 'Đã nghe',
       play: 'Phát',
-      pause: 'Tạm dừng'
+      pause: 'Tạm dừng',
+      loading: 'Đang tải âm thanh…',
+      error: 'Không thể phát âm thanh. Vui lòng kiểm tra kết nối và thử lại.'
     },
 
     id: {
@@ -84,7 +102,9 @@ function initPlayButton() {
       playing: 'Sedang diputar',
       completed: 'Selesai diputar',
       play: 'Putar',
-      pause: 'Jeda'
+      pause: 'Jeda',
+      loading: 'Memuat audio…',
+      error: 'Audio tidak dapat diputar. Periksa koneksi lalu coba lagi.'
     }
   };
 
@@ -154,6 +174,25 @@ function initPlayButton() {
     const durationTime = player.querySelector('.duration-time');
     const playStatus = player.querySelector('.play-status');
 
+    const audioMessage = document.createElement('p');
+    audioMessage.className = 'audio-message';
+    audioMessage.setAttribute('aria-live', 'polite');
+    audioMessage.hidden = true;
+
+    playStatus.insertAdjacentElement('afterend', audioMessage);
+
+    function showAudioMessage(type, message) {
+      audioMessage.dataset.type = type;
+      audioMessage.textContent = message;
+      audioMessage.hidden = false;
+    }
+
+    function hideAudioMessage() {
+      audioMessage.hidden = true;
+      audioMessage.textContent = '';
+      delete audioMessage.dataset.type;
+    }
+
     const seekBar = player.querySelector('.seek-bar');
     const seekProgress = player.querySelector('.seek-progress');
     const seekKnob = player.querySelector('.seek-knob');
@@ -174,8 +213,18 @@ function initPlayButton() {
       return;
     }
 
-    const positionKey = `radio-${language}-position`;
-    const completedKey = `radio-${language}-completed`;
+    const audioId = audio.getAttribute('src');
+
+    const positionKey = `radio-${episodeId}-${language}-position`;
+    const completedKey = `radio-${episodeId}-${language}-completed`;
+
+    const savedCompleted =
+      localStorage.getItem(completedKey) === 'true';
+
+    if (savedCompleted) {
+      playStatus.textContent = texts.completed;
+      playStatus.dataset.status = 'completed';
+    }
 
     function updatePlayStatus() {
 
@@ -250,6 +299,8 @@ function initPlayButton() {
 
         try {
 
+          showAudioMessage('loading', texts.loading);
+
           await audio.play();
 
           activeAudio = audio;
@@ -263,6 +314,7 @@ function initPlayButton() {
             console.log('audio_start送信', language);
 
             gtag('event', 'audio_start', {
+              episode_id: episodeId,
               audio_language: language,
               send_to: 'G-PGVD9L27LG'
             });
@@ -301,6 +353,11 @@ function initPlayButton() {
         } catch (error) {
 
           console.error('音声を再生できませんでした', error);
+
+          showAudioMessage('error', texts.error);
+
+          playButton.classList.remove('is-playing');
+          playButton.setAttribute('aria-label', texts.play);
 
         }
 
@@ -352,6 +409,42 @@ function initPlayButton() {
 
       });
 
+    });
+
+    audio.addEventListener('loadstart', () => {
+      if (audio.readyState < 1) {
+        showAudioMessage('loading', texts.loading);
+      }
+    });
+
+    audio.addEventListener('waiting', () => {
+      showAudioMessage('loading', texts.loading);
+    });
+
+    audio.addEventListener('stalled', () => {
+      if (!audio.paused) {
+        showAudioMessage('loading', texts.loading);
+      }
+    });
+
+    audio.addEventListener('playing', () => {
+      hideAudioMessage();
+    });
+
+    audio.addEventListener('canplay', () => {
+      hideAudioMessage();
+    });
+
+    audio.addEventListener('error', () => {
+      showAudioMessage('error', texts.error);
+
+      playButton.classList.remove('is-playing');
+      playButton.setAttribute('aria-label', texts.play);
+
+      if (activeAudio === audio) {
+        miniPlayButton.classList.remove('is-playing');
+        miniPlayButton.setAttribute('aria-label', texts.play);
+      }
     });
 
     audio.addEventListener('ended', () => {
@@ -446,6 +539,7 @@ function initPlayButton() {
           console.log('25%到達', progressPercent);
 
           gtag('event', 'audio_25', {
+            episode_id: episodeId,
             audio_language: language
           });
         }
@@ -458,6 +552,7 @@ function initPlayButton() {
           playbackMilestones[50] = true;
 
           gtag('event', 'audio_50', {
+            episode_id: episodeId,
             audio_language: language
           });
         }
@@ -470,6 +565,7 @@ function initPlayButton() {
           playbackMilestones[75] = true;
 
           gtag('event', 'audio_75', {
+            episode_id: episodeId,
             audio_language: language
           });
         }
@@ -484,6 +580,7 @@ function initPlayButton() {
           console.log('95%到達', progressPercent);
 
           gtag('event', 'audio_complete', {
+            episode_id: episodeId,
             audio_language: language
           });
         }
