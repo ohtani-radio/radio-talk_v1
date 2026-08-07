@@ -57,6 +57,13 @@ async function init() {
     btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
     const panel = document.querySelector(`[data-panel="${btn.dataset.tab}"]`);
     panel.hidden = false; panel.classList.add('active');
+
+    document.dispatchEvent(new CustomEvent('languageTabChanged', {
+      detail: {
+        language: btn.dataset.tab
+      }
+    }));
+
   }));
 
   initPlayButton();
@@ -112,6 +119,60 @@ function initPlayButton() {
   const miniToggle = document.querySelector('.mini-player-toggle');
   const miniLanguage = document.querySelector('.mini-language');
   const miniTime = document.querySelector('.mini-time');
+
+  document.addEventListener('languageTabChanged', event => {
+    const language = event.detail?.language;
+    if (!language) return;
+
+    const panel = document.querySelector(`[data-panel="${language}"]`);
+    const audio = panel?.querySelector(
+      `.audio-source[data-language="${language}"]`
+    );
+    const player = panel?.querySelector(
+      `.custom-player[data-language="${language}"]`
+    );
+    const playButton = player?.querySelector('.play-button');
+
+    if (!audio || !playButton) return;
+
+    activeAudio = audio;
+    activePlayButton = playButton;
+    activeTexts = statusTexts[language];
+
+    miniLanguage.textContent =
+      language === 'ja'
+        ? 'JP 日本語'
+        : language === 'vi'
+          ? 'VN Tiếng Việt'
+          : 'ID Indonesia';
+
+    miniTime.textContent =
+      `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+
+    const percent = audio.duration
+      ? (audio.currentTime / audio.duration) * 100
+      : 0;
+
+    miniSeekProgress.style.width = percent + '%';
+    miniSeekKnob.style.left = percent + '%';
+
+    const isPlaying =
+      !audio.paused &&
+      !audio.ended;
+
+    miniPlayButton.classList.toggle(
+      'is-playing',
+      isPlaying
+    );
+
+    miniPlayButton.setAttribute(
+      'aria-label',
+      isPlaying
+        ? activeTexts.pause
+        : activeTexts.play
+    );
+  });
+
   const miniPlayButton = document.querySelector('.mini-play');
   const miniRewindButton = document.querySelector('.mini-rewind');
   const miniForwardButton = document.querySelector('.mini-forward');
