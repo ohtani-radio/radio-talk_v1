@@ -508,7 +508,7 @@ body {
 .mini-player {
     position: fixed;
     right: 0;
-    bottom: calc(18px + env(safe-area-inset-bottom));
+    bottom: calc(30px + env(safe-area-inset-bottom));
     z-index: 9999;
 
     width: 48px;
