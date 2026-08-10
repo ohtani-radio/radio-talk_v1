@@ -1335,3 +1335,21 @@ body {
 .mini-play {
     transform: none;
 }
+
+/* ===== ミニシークバー 重なり順をSafari向けに固定 ===== */
+
+.mini-seek-bar {
+    isolation: isolate;
+}
+
+.mini-seek-bar::before {
+    z-index: 0;
+}
+
+.mini-seek-progress {
+    z-index: 1;
+}
+
+.mini-seek-knob {
+    z-index: 3;
+}
