@@ -1296,45 +1296,6 @@ body {
     transform: none;
 }
 
-/* ===== ミニプレーヤー 実機スマホ表示の微調整 ===== */
-
-/* シークバーの線を下、丸を上に固定 */
-.mini-seek-bar::before {
-    z-index: 0;
-}
-
-.mini-seek-progress {
-    z-index: 1;
-}
-
-.mini-seek-knob {
-    z-index: 2;
-}
-
-
-/* −10 / +10 の実機ズレ対策 */
-.mini-rewind,
-.mini-forward {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 32px;
-    padding: 0;
-
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1;
-
-    transform: none;
-}
-
-
-/* 再生ボタンも同じ高さ基準に戻す */
-.mini-play {
-    transform: none;
-}
 
 /* ===== ミニシークバー 重なり順をSafari向けに固定 ===== */
 
@@ -1352,4 +1313,19 @@ body {
 
 .mini-seek-knob {
     z-index: 3;
+}
+
+/* ===== ミニシークバー ノブ表示修正 ===== */
+
+.mini-seek-knob {
+    width: 16px;
+    height: 16px;
+
+    background: #fff;
+    border: 4px solid var(--blue2);
+
+    box-shadow:
+        0 2px 6px rgba(19, 38, 59, 0.22);
+
+    z-index: 10;
 }
