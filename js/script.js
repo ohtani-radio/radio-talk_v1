@@ -919,4 +919,32 @@ function initPlayButton() {
 
 }
 
+// テーマタイトルの「|」を改行に変換
+const themeTitle = document.getElementById("theme-title");
+
+if (themeTitle) {
+    const formatThemeTitle = () => {
+        const text = themeTitle.textContent;
+
+        if (!text.includes("|")) return;
+
+        themeTitle.innerHTML = text
+            .split("|")
+            .map(part => part.trim())
+            .join("<br>");
+    };
+
+    const themeTitleObserver = new MutationObserver(() => {
+        formatThemeTitle();
+    });
+
+    themeTitleObserver.observe(themeTitle, {
+        childList: true,
+        characterData: true,
+        subtree: true
+    });
+
+    formatThemeTitle();
+}
+
 document.addEventListener('DOMContentLoaded', init);
