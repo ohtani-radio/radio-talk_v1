@@ -453,7 +453,7 @@ function initPlayButton() {
 
     });
 
-    speedButtons.forEach(button => {
+    speedButtons.forEach((button, index) => {
 
       button.addEventListener('click', () => {
 
@@ -465,6 +465,14 @@ function initPlayButton() {
         });
 
         button.classList.add('active');
+
+        const speedButtonsArea =
+          button.closest('.speed-buttons');
+
+        speedButtonsArea.style.setProperty(
+          '--speed-position',
+          index
+        );
 
       });
 
@@ -923,28 +931,28 @@ function initPlayButton() {
 const themeTitle = document.getElementById("theme-title");
 
 if (themeTitle) {
-    const formatThemeTitle = () => {
-        const text = themeTitle.textContent;
+  const formatThemeTitle = () => {
+    const text = themeTitle.textContent;
 
-        if (!text.includes("|")) return;
+    if (!text.includes("|")) return;
 
-        themeTitle.innerHTML = text
-            .split("|")
-            .map(part => part.trim())
-            .join("<br>");
-    };
+    themeTitle.innerHTML = text
+      .split("|")
+      .map(part => part.trim())
+      .join("<br>");
+  };
 
-    const themeTitleObserver = new MutationObserver(() => {
-        formatThemeTitle();
-    });
-
-    themeTitleObserver.observe(themeTitle, {
-        childList: true,
-        characterData: true,
-        subtree: true
-    });
-
+  const themeTitleObserver = new MutationObserver(() => {
     formatThemeTitle();
+  });
+
+  themeTitleObserver.observe(themeTitle, {
+    childList: true,
+    characterData: true,
+    subtree: true
+  });
+
+  formatThemeTitle();
 }
 
 document.addEventListener('DOMContentLoaded', init);

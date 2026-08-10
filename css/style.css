@@ -308,12 +308,10 @@ body {
 
     height: 3px;
 
-    background: linear-gradient(
-        90deg,
-        transparent,
-        var(--blue2),
-        transparent
-    );
+    background: linear-gradient(90deg,
+            transparent,
+            var(--blue2),
+            transparent);
 
     border-radius: 999px;
 
@@ -710,140 +708,96 @@ details .script-box {
     transform: scale(.95);
 }
 
+/* ===== 再生速度セグメント ===== */
+
 .speed-area p {
     margin: 0 0 10px;
     font-size: 13px;
     color: #5f6f82;
 }
 
+.speed-buttons {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 4px;
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(47, 119, 185, 0.18);
+    border-radius: 16px;
+
+    box-shadow:
+        0 3px 9px rgba(19, 38, 59, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* 動く選択ボタン */
+.speed-buttons::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+
+    width: calc((100% - 8px) / 4);
+    height: calc(100% - 8px);
+    left: calc(4px + var(--speed-position, 0) * ((100% - 8px) / 4));
+
+    background: linear-gradient(
+        180deg,
+        rgba(91, 158, 218, 0.24) 0%,
+        rgba(47, 119, 185, 0.15) 100%
+    );
+    border: 1.5px solid rgba(47, 119, 185, 0.58);
+    border-radius: 12px;
+
+    box-shadow:
+        0 3px 7px rgba(47, 119, 185, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+
+    transition: left 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
 .speed-buttons button {
-    padding: 9px 4px;
+    position: relative;
+    z-index: 1;
 
-    border: 1px solid #d3e1ee;
-    border-radius: 999px;
+    padding: 11px 4px;
+    border: 0;
+    background: transparent;
 
-    background: rgba(255, 255, 255, 0.85);
-    color: #4c647b;
-
+    color: #5c7187;
     font-size: 13px;
-    font-weight: 600;
-
+    font-weight: 500;
     cursor: pointer;
 
     transition:
-        background 0.2s ease,
         color 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.15s ease,
-        box-shadow 0.2s ease;
+        transform 0.12s ease;
 }
 
-.speed-buttons button {
-    padding: 10px 4px;
-    border: 1px solid #cbd9e8;
-    background: #fff;
-    border-radius: 10px;
-    color: #35536f;
-    font-size: 13px;
-    cursor: pointer;
+/* 区切り線 */
+.speed-buttons button:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 22%;
+    right: 0;
+    width: 1px;
+    height: 56%;
+    background: rgba(95, 111, 130, 0.13);
 }
 
 .speed-buttons button.active {
-    background: var(--blue2);
-    color: #fff;
-
-    border-color: var(--blue2);
-
-    box-shadow: 0 4px 10px rgba(47, 119, 185, 0.18);
-
-    transform: translateY(-1px);
+    color: #2169aa;
+    font-weight: 650;
 }
 
-.speed-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin-bottom: 10px;
-
-    color: #5f6f82;
-    font-size: 13px;
+.speed-buttons button.active::after {
+    opacity: 0;
 }
 
-.speed-value {
-    color: var(--blue);
-    font-weight: 700;
-}
-
-.speed-slider {
-    width: 100%;
-    height: 6px;
-
-    margin: 4px 0 8px;
-
-    appearance: none;
-    -webkit-appearance: none;
-
-    background: #dbe5f0;
-    border-radius: 999px;
-
-    cursor: pointer;
-}
-
-/* Chrome / Safari */
-.speed-slider::-webkit-slider-thumb {
-    width: 18px;
-    height: 18px;
-
-    appearance: none;
-    -webkit-appearance: none;
-
-    background: var(--blue2);
-
-    border: 3px solid #fff;
-    border-radius: 50%;
-
-    box-shadow: 0 2px 7px rgba(19, 38, 59, 0.22);
-
-    cursor: grab;
-}
-
-.speed-slider::-webkit-slider-thumb:active {
-    cursor: grabbing;
-}
-
-/* Firefox */
-.speed-slider::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-
-    background: var(--blue2);
-
-    border: 3px solid #fff;
-    border-radius: 50%;
-
-    box-shadow: 0 2px 7px rgba(19, 38, 59, 0.22);
-
-    cursor: grab;
-}
-
-.speed-labels {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-
-    margin-top: 4px;
-
-    color: #7a8b9c;
-    font-size: 10px;
-    text-align: center;
-}
-
-.speed-labels span:first-child {
-    text-align: left;
-}
-
-.speed-labels span:last-child {
-    text-align: right;
+.speed-buttons button:active {
+    transform: scale(0.96);
 }
 
 .play-status {
@@ -919,11 +873,9 @@ details .script-box {
     border-radius: 14px;
 
     background:
-        linear-gradient(
-            180deg,
+        linear-gradient(180deg,
             #ffffff 0%,
-            #fbfdff 100%
-        );
+            #fbfdff 100%);
 
     line-height: 1.9;
     white-space: normal;
@@ -948,11 +900,9 @@ details .script-box {
     width: 3px;
 
     border-radius: 999px;
-    background: linear-gradient(
-        180deg,
-        var(--blue2),
-        rgba(47, 119, 185, 0.15)
-    );
+    background: linear-gradient(180deg,
+            var(--blue2),
+            rgba(47, 119, 185, 0.15));
 }
 
 /* スクロールバーの見た目 */
@@ -1293,14 +1243,15 @@ body {
 }
 
 .airplay-icon {
-  animation: rotate-icon 3s linear infinite;
+    animation: rotate-icon 3s linear infinite;
 }
 
 @keyframes rotate-icon {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
