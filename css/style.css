@@ -99,6 +99,29 @@ body {
     opacity: 0.9;
 }
 
+.hero-character {
+    position: absolute;
+    right: 18px;
+    bottom: 0;
+    width: 260px;
+    height: auto;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@media (max-width: 640px) {
+    .hero-character {
+        right: -8px;
+        bottom: 0;
+        width: 112px;
+        /* 大きさはそのまま */
+    }
+
+    .hero p {
+        padding-right: 58px;
+    }
+}
+
 .hero-wave {
     position: absolute;
     left: 50%;
@@ -179,6 +202,23 @@ body {
     border-radius: 20px;
 
     text-align: center;
+
+    position: relative;
+    overflow: hidden;
+}
+
+/* 今回のテーマ：上部グラデーションライン */
+.theme-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg,
+            #1f6fd1 0%,
+            #168fc5 50%,
+            #18c5b5 100%);
 }
 
 .theme-card span {
@@ -202,9 +242,21 @@ body {
     content: "";
 
     width: 28px;
-    height: 1px;
+    height: 2px;
 
-    background: rgba(47, 126, 184, 0.35);
+    border-radius: 999px;
+}
+
+.theme-card span::before {
+    background: linear-gradient(90deg,
+            #1f6fd1,
+            #168fc5);
+}
+
+.theme-card span::after {
+    background: linear-gradient(90deg,
+            #168fc5,
+            #18c5b5);
 }
 
 .theme-card h2 {
@@ -742,11 +794,9 @@ details .script-box {
     height: calc(100% - 8px);
     left: calc(4px + var(--speed-position, 0) * ((100% - 8px) / 4));
 
-    background: linear-gradient(
-        180deg,
-        rgba(91, 158, 218, 0.24) 0%,
-        rgba(47, 119, 185, 0.15) 100%
-    );
+    background: linear-gradient(180deg,
+            rgba(91, 158, 218, 0.24) 0%,
+            rgba(47, 119, 185, 0.15) 100%);
     border: 1.5px solid rgba(47, 119, 185, 0.58);
     border-radius: 12px;
 
@@ -1328,4 +1378,453 @@ body {
         0 2px 6px rgba(19, 38, 59, 0.22);
 
     z-index: 10;
+}
+
+/* ========================================
+   キャラクター版ヘッダー
+======================================== */
+
+.hero {
+    position: relative;
+    overflow: hidden;
+
+    min-height: 360px;
+    padding: 0;
+
+    color: #fff;
+    text-align: left;
+
+    background:
+        radial-gradient(circle at 92% 8%,
+            rgba(45, 225, 212, 0.48) 0%,
+            rgba(45, 225, 212, 0.18) 23%,
+            transparent 48%),
+        linear-gradient(115deg,
+            #165a9d 0%,
+            #1766ad 54%,
+            #10aeb2 100%);
+}
+
+/* 全体 */
+.hero-inner {
+    position: relative;
+    z-index: 3;
+
+    width: min(1000px, calc(100% - 70px));
+    min-height: 360px;
+
+    margin: 0 auto;
+}
+
+/* 左側の文字 */
+.hero-copy {
+    position: absolute;
+    left: 35px;
+    top: 54px;
+
+    z-index: 5;
+
+    width: 58%;
+}
+
+/* マイク＋RADIO TALK */
+.hero-brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    margin-bottom: 26px;
+}
+
+.hero .mic {
+    position: static;
+
+    width: 56px;
+    height: 56px;
+
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, .30);
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, .10);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .18),
+        0 8px 20px rgba(0, 0, 0, .07);
+}
+
+.hero .mic svg {
+    width: 28px;
+    height: 28px;
+}
+
+.hero .hero-label {
+    position: static;
+
+    margin: 0;
+
+    color: rgba(255, 255, 255, .92);
+
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: .20em;
+}
+
+/* タイトル */
+.hero h1 {
+    position: static;
+
+    margin: 0;
+
+    color: #fff;
+
+    font-size: clamp(52px, 6vw, 78px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: .01em;
+}
+
+/* 水色の短い線 */
+.hero-accent {
+    width: 54px;
+    height: 4px;
+
+    margin: 28px 0 22px;
+
+    border-radius: 999px;
+
+    background: #2de0d0;
+}
+
+/* 説明文 */
+.hero p {
+    position: static;
+
+    margin: 0;
+
+    color: rgba(255, 255, 255, .95);
+
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.7;
+}
+
+/* キャラクター */
+.hero-character {
+    position: absolute;
+
+    right: 12px;
+    bottom: -8px;
+
+    width: 330px;
+    height: auto;
+
+    z-index: 4;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+/* =========================
+   背景のうにょうにょ
+========================= */
+
+.hero::before {
+    content: "";
+    position: absolute;
+
+    width: 760px;
+    height: 220px;
+
+    left: -120px;
+    bottom: -110px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.055);
+
+    transform: rotate(-8deg);
+
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+
+    width: 900px;
+    height: 260px;
+
+    left: 80px;
+    bottom: -150px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.035);
+
+    transform: rotate(6deg);
+
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* =========================
+   波形
+========================= */
+
+.hero-wave {
+    position: absolute;
+
+    left: 200px;
+    bottom: 28px;
+
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    opacity: 0.15;
+    z-index: 2;
+}
+
+.hero-wave span {
+    width: 4px;
+    border-radius: 999px;
+    background: #fff;
+}
+
+/* 波形を少し横長に */
+.hero-wave span:nth-child(1) {
+    height: 8px;
+}
+
+.hero-wave span:nth-child(2) {
+    height: 14px;
+}
+
+.hero-wave span:nth-child(3) {
+    height: 22px;
+}
+
+.hero-wave span:nth-child(4) {
+    height: 30px;
+}
+
+.hero-wave span:nth-child(5) {
+    height: 18px;
+}
+
+.hero-wave span:nth-child(6) {
+    height: 25px;
+}
+
+.hero-wave span:nth-child(7) {
+    height: 34px;
+}
+
+.hero-wave span:nth-child(8) {
+    height: 22px;
+}
+
+.hero-wave span:nth-child(9) {
+    height: 14px;
+}
+
+.hero-wave span:nth-child(10) {
+    height: 9px;
+}
+
+.hero-wave span:nth-child(11) {
+    height: 13px;
+}
+
+.hero-wave span:nth-child(12) {
+    height: 20px;
+}
+
+.hero-wave span:nth-child(13) {
+    height: 28px;
+}
+
+.hero-wave span:nth-child(14) {
+    height: 18px;
+}
+
+.hero-wave span:nth-child(15) {
+    height: 32px;
+}
+
+.hero-wave span:nth-child(16) {
+    height: 24px;
+}
+
+.hero-wave span:nth-child(17) {
+    height: 17px;
+}
+
+.hero-wave span:nth-child(18) {
+    height: 25px;
+}
+
+.hero-wave span:nth-child(19) {
+    height: 15px;
+}
+
+.hero-wave span:nth-child(20) {
+    height: 8px;
+}
+
+/* 右上のドット装飾 */
+.hero-inner::after {
+    content: "";
+
+    position: absolute;
+
+    top: 22px;
+    right: 0;
+
+    width: 100px;
+    height: 70px;
+
+    opacity: .16;
+
+    background-image:
+        radial-gradient(circle, #fff 1.5px, transparent 1.7px);
+
+    background-size: 13px 13px;
+
+    pointer-events: none;
+}
+
+@media (max-width: 640px) {
+
+    .hero {
+        min-height: 265px;
+    }
+
+    .hero-inner {
+        width: calc(100% - 34px);
+        min-height: 265px;
+    }
+
+    .hero-copy {
+        left: 0;
+        top: 28px;
+
+        width: 74%;
+    }
+
+    .hero-brand {
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .hero .mic {
+        width: 43px;
+        height: 43px;
+
+        border-radius: 13px;
+    }
+
+    .hero .mic svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .hero .hero-label {
+        font-size: 11px;
+        letter-spacing: .18em;
+        white-space: nowrap;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+        line-height: 1.05;
+        white-space: nowrap;
+    }
+
+    .hero-accent {
+        width: 40px;
+        height: 3px;
+
+        margin: 17px 0 14px;
+    }
+
+    .hero p {
+        width: auto;
+        max-width: 240px;
+
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+    .hero-character {
+        right: -25px;
+        bottom: 0;
+
+        width: 185px;
+    }
+
+    .hero-wave {
+        left: 90px;
+        right: auto;
+        bottom: 18px;
+
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        width: auto;
+
+        opacity: 0.14;
+    }
+
+    .hero-wave span {
+        width: 3px;
+    }
+
+    .hero-inner::after {
+        top: 10px;
+        right: -8px;
+
+        width: 72px;
+        height: 60px;
+
+        background-size: 11px 11px;
+    }
+
+    .hero::before {
+        left: -30%;
+        bottom: -105px;
+
+        width: 155%;
+        height: 180px;
+    }
+
+    .hero::after {
+        left: -28%;
+        bottom: -120px;
+
+        width: 150%;
+        height: 195px;
+    }
+}
+
+.sp-only {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .sp-only {
+        display: block;
+    }
+
+    .pc-comma {
+        display: none;
+    }
 }
