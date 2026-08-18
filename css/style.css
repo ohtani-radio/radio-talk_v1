@@ -1528,6 +1528,20 @@ body {
 
     pointer-events: none;
     user-select: none;
+
+    animation: character-float 4s ease-in-out infinite;
+}
+
+@keyframes character-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 /* =========================
@@ -1581,8 +1595,8 @@ body {
 .hero-wave {
     position: absolute;
 
-    left: 200px;
-    bottom: 28px;
+    left: max(70px, calc((100% - 1000px) / 2 + 140px));
+    bottom: 26px;
 
     display: flex;
     align-items: center;
@@ -1765,7 +1779,7 @@ body {
 
     .hero-character {
         right: -25px;
-        bottom: 0;
+        bottom: -3px;
 
         width: 185px;
     }
@@ -1826,5 +1840,22 @@ body {
 
     .pc-comma {
         display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero-character {
+        animation: character-float-sp 4s ease-in-out infinite;
+    }
+}
+
+@keyframes character-float-sp {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
     }
 }
