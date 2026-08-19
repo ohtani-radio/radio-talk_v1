@@ -1859,3 +1859,8 @@ body {
         transform: translateY(-3px);
     }
 }
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
