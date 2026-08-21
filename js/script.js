@@ -49,22 +49,331 @@ async function init() {
     catch { box.textContent = '原稿を読み込めませんでした'; }
   });
 
-  const buttons = document.querySelectorAll('.tab-button');
-  const panels = document.querySelectorAll('.tab-panel');
-  buttons.forEach(btn => btn.addEventListener('click', () => {
-    buttons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
-    panels.forEach(p => { p.hidden = true; p.classList.remove('active'); });
-    btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
-    const panel = document.querySelector(`[data-panel="${btn.dataset.tab}"]`);
-    panel.hidden = false; panel.classList.add('active');
+  /* ========================================
+   言語切替
+   PC：タブクリック
+   スマホ：タブクリック＋左右スワイプ
+======================================== */
 
-    document.dispatchEvent(new CustomEvent('languageTabChanged', {
-      detail: {
-        language: btn.dataset.tab
+  const buttons = Array.from(
+    document.querySelectorAll('.tab-button')
+  );
+
+  const panels = Array.from(
+    document.querySelectorAll('.tab-panel')
+  );
+
+  const contentCard =
+    document.querySelector('.content-card');
+
+  const languages = ['ja', 'vi', 'id'];
+
+  let currentLanguageIndex = 0;
+
+
+  function changeLanguage(language, direction = null) {
+
+    const newIndex =
+      languages.indexOf(language);
+
+    if (newIndex === -1) return;
+
+
+    buttons.forEach(button => {
+
+      const isActive =
+        button.dataset.tab === language;
+
+      button.classList.toggle(
+        'active',
+        isActive
+      );
+
+      button.setAttribute(
+        'aria-selected',
+        isActive ? 'true' : 'false'
+      );
+
+    });
+
+
+    panels.forEach(panel => {
+
+      const isActive =
+        panel.dataset.panel === language;
+
+      panel.hidden = !isActive;
+
+      panel.classList.toggle(
+        'active',
+        isActive
+      );
+
+      panel.classList.remove(
+        'language-swipe-left',
+        'language-swipe-right'
+      );
+
+    });
+
+
+    const activePanel =
+      document.querySelector(
+        `[data-panel="${language}"]`
+      );
+
+
+    /*
+      スマホでスワイプした場合だけ
+      軽く横から表示
+    */
+    if (
+      activePanel &&
+      window.matchMedia(
+        '(max-width: 640px)'
+      ).matches &&
+      direction
+    ) {
+
+      const animationClass =
+        direction === 'left'
+          ? 'language-swipe-left'
+          : 'language-swipe-right';
+
+      /*
+        animationを毎回再実行できるようにする
+      */
+      void activePanel.offsetWidth;
+
+      activePanel.classList.add(
+        animationClass
+      );
+
+    }
+
+
+    currentLanguageIndex = newIndex;
+
+
+    /*
+      ミニプレーヤーなどにも
+      言語変更を通知
+    */
+    document.dispatchEvent(
+      new CustomEvent(
+        'languageTabChanged',
+        {
+          detail: {
+            language: language
+          }
+        }
+      )
+    );
+
+  }
+
+
+  /* =========================
+     言語タブを押したとき
+  ========================= */
+
+  buttons.forEach(button => {
+
+    button.addEventListener(
+      'click',
+      () => {
+
+        const newIndex =
+          languages.indexOf(
+            button.dataset.tab
+          );
+
+        let direction = null;
+
+        if (
+          window.matchMedia(
+            '(max-width: 640px)'
+          ).matches
+        ) {
+
+          if (
+            newIndex >
+            currentLanguageIndex
+          ) {
+
+            direction = 'left';
+
+          } else if (
+            newIndex <
+            currentLanguageIndex
+          ) {
+
+            direction = 'right';
+
+          }
+
+        }
+
+        changeLanguage(
+          button.dataset.tab,
+          direction
+        );
+
       }
-    }));
+    );
 
-  }));
+  });
+
+
+  /* ========================================
+     スマホ左右スワイプ
+  ======================================== */
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  let touchEndX = 0;
+  let touchEndY = 0;
+
+
+  function isMobileSwipe() {
+
+    return window.matchMedia(
+      '(max-width: 640px)'
+    ).matches;
+
+  }
+
+
+  contentCard?.addEventListener(
+    'touchstart',
+    event => {
+
+      if (!isMobileSwipe()) return;
+
+      /*
+        シークバーやボタン操作中は
+        言語スワイプさせない
+      */
+      if (
+        event.target.closest(
+          '.seek-bar, button, summary, audio'
+        )
+      ) {
+        return;
+      }
+
+
+      const touch =
+        event.changedTouches[0];
+
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+
+      touchEndX = touch.clientX;
+      touchEndY = touch.clientY;
+
+    },
+    {
+      passive: true
+    }
+  );
+
+
+  contentCard?.addEventListener(
+    'touchend',
+    event => {
+
+      if (!isMobileSwipe()) return;
+
+      if (!touchStartX && !touchStartY) {
+        return;
+      }
+
+
+      const touch =
+        event.changedTouches[0];
+
+      touchEndX = touch.clientX;
+      touchEndY = touch.clientY;
+
+
+      const diffX =
+        touchEndX - touchStartX;
+
+      const diffY =
+        touchEndY - touchStartY;
+
+
+      /*
+        横方向に60px以上動き、
+        縦移動よりも明確に横移動した場合だけ
+        言語切替と判定
+      */
+      const isHorizontalSwipe =
+        Math.abs(diffX) >= 60 &&
+        Math.abs(diffX) >
+        Math.abs(diffY) * 1.25;
+
+
+      if (!isHorizontalSwipe) {
+
+        touchStartX = 0;
+        touchStartY = 0;
+
+        return;
+
+      }
+
+
+      /*
+        左へスワイプ
+        日本語 → VN → ID
+      */
+      if (
+        diffX < 0 &&
+        currentLanguageIndex <
+        languages.length - 1
+      ) {
+
+        currentLanguageIndex++;
+
+        changeLanguage(
+          languages[currentLanguageIndex],
+          'left'
+        );
+
+      }
+
+
+      /*
+        右へスワイプ
+        ID → VN → 日本語
+      */
+      else if (
+        diffX > 0 &&
+        currentLanguageIndex > 0
+      ) {
+
+        currentLanguageIndex--;
+
+        changeLanguage(
+          languages[currentLanguageIndex],
+          'right'
+        );
+
+      }
+
+
+      touchStartX = 0;
+      touchStartY = 0;
+
+    },
+    {
+      passive: true
+    }
+  );
+
 
   initPlayButton();
 

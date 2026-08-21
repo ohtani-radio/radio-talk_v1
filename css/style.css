@@ -1864,3 +1864,180 @@ button,
 a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ========================================
+   スマホ：言語切替・スワイプUI
+======================================== */
+
+@media (max-width: 640px) {
+
+    /* 言語タブを画面上部に残す */
+    .tabs {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        margin-top: 10px;
+        margin-bottom: 10px;
+
+        padding: 4px;
+        gap: 3px;
+
+        background: rgba(255, 255, 255, 0.94);
+
+        border: 1px solid rgba(214, 225, 235, 0.95);
+        border-radius: 12px;
+
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+
+        box-shadow: 0 4px 12px rgba(19, 38, 59, 0.08);
+    }
+
+    /* 言語ボタンを縦に小さくする */
+    .tab-button {
+        padding: 9px 2px;
+
+        border-radius: 9px;
+
+        font-size: 11px;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .tab-button.active {
+        transform: none;
+    }
+
+    .tab-button.active::after {
+        bottom: 3px;
+        width: 18px;
+    }
+
+    /* 言語コンテンツ全体 */
+    .content-card {
+        padding: 16px 14px 20px;
+
+        /*
+          縦スクロールを通常どおり使いつつ、
+          JS側で左右スワイプを判定する
+        */
+        touch-action: pan-y;
+    }
+
+    /* 言語名のスペースを少し縮める */
+    .tab-panel h3 {
+        margin-bottom: 16px;
+
+        padding-left: 11px;
+
+        font-size: 18px;
+    }
+
+    .tab-panel h3::before {
+        width: 3px;
+        height: 21px;
+    }
+
+    /*
+      スマホだけ、
+      プレーヤー → 原稿
+      の順番にする
+    */
+    .tab-panel.active {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tab-panel.active > h3 {
+        order: 0;
+    }
+
+    /*
+      HTML上では1個目が原稿
+      → スマホでは下へ
+    */
+    .tab-panel.active > .section-block:nth-of-type(1) {
+        order: 2;
+    }
+
+    /*
+      HTML上では2個目がプレーヤー
+      → スマホでは上へ
+    */
+    .tab-panel.active > .section-block:nth-of-type(2) {
+        order: 1;
+    }
+
+    /* プレーヤー上部の余白を縮める */
+    .custom-player {
+        margin-top: 0;
+        padding: 16px 14px;
+    }
+
+    /*
+      プレーヤーの次に原稿が来るので、
+      その間だけ余白を作る
+    */
+    .tab-panel.active > .section-block:nth-of-type(1) {
+        margin-top: 16px;
+    }
+
+    /* 元の兄弟指定による余白を打ち消す */
+    .section-block + .section-block {
+        margin-top: 0;
+    }
+
+    /* 原稿ボタンも少しコンパクトに */
+    details {
+        margin-top: 0;
+    }
+
+    summary {
+        padding: 12px 12px 12px 14px;
+
+        font-size: 13px;
+    }
+}
+
+
+/* ========================================
+   言語スワイプ時の軽いアニメーション
+======================================== */
+
+@media (max-width: 640px) {
+
+    .tab-panel.language-swipe-left {
+        animation: languageSwipeLeft 0.22s ease;
+    }
+
+    .tab-panel.language-swipe-right {
+        animation: languageSwipeRight 0.22s ease;
+    }
+
+    @keyframes languageSwipeLeft {
+        from {
+            opacity: 0;
+            transform: translateX(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes languageSwipeRight {
+        from {
+            opacity: 0;
+            transform: translateX(-18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+}
