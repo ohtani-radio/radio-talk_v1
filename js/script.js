@@ -49,11 +49,11 @@ async function init() {
     catch { box.textContent = '原稿を読み込めませんでした'; }
   });
 
-  /* ========================================
-   言語切替
-   PC：タブクリック
-   スマホ：タブクリック＋左右スワイプ
-======================================== */
+    /* ========================================
+     言語切替
+     PC：従来のタブ切替
+     スマホ：3言語を横スクロール
+  ======================================== */
 
   const buttons = Array.from(
     document.querySelectorAll('.tab-button')
@@ -66,18 +66,19 @@ async function init() {
   const contentCard =
     document.querySelector('.content-card');
 
-  const languages = ['ja', 'vi', 'id'];
+  const mobileQuery =
+    window.matchMedia('(max-width: 640px)');
 
-  let currentLanguageIndex = 0;
+  let currentLanguage = 'ja';
+
+  let scrollTimer = null;
 
 
-  function changeLanguage(language, direction = null) {
+  /* =========================
+     タブの見た目を更新
+  ========================= */
 
-    const newIndex =
-      languages.indexOf(language);
-
-    if (newIndex === -1) return;
-
+  function updateActiveTab(language) {
 
     buttons.forEach(button => {
 
@@ -96,69 +97,21 @@ async function init() {
 
     });
 
-
-    panels.forEach(panel => {
-
-      const isActive =
-        panel.dataset.panel === language;
-
-      panel.hidden = !isActive;
-
-      panel.classList.toggle(
-        'active',
-        isActive
-      );
-
-      panel.classList.remove(
-        'language-swipe-left',
-        'language-swipe-right'
-      );
-
-    });
+  }
 
 
-    const activePanel =
-      document.querySelector(
-        `[data-panel="${language}"]`
-      );
+  /* =========================
+     言語変更を他機能へ通知
+  ========================= */
 
+  function notifyLanguageChange(language) {
 
-    /*
-      スマホでスワイプした場合だけ
-      軽く横から表示
-    */
-    if (
-      activePanel &&
-      window.matchMedia(
-        '(max-width: 640px)'
-      ).matches &&
-      direction
-    ) {
-
-      const animationClass =
-        direction === 'left'
-          ? 'language-swipe-left'
-          : 'language-swipe-right';
-
-      /*
-        animationを毎回再実行できるようにする
-      */
-      void activePanel.offsetWidth;
-
-      activePanel.classList.add(
-        animationClass
-      );
-
+    if (currentLanguage === language) {
+      return;
     }
 
+    currentLanguage = language;
 
-    currentLanguageIndex = newIndex;
-
-
-    /*
-      ミニプレーヤーなどにも
-      言語変更を通知
-    */
     document.dispatchEvent(
       new CustomEvent(
         'languageTabChanged',
@@ -174,7 +127,51 @@ async function init() {
 
 
   /* =========================
-     言語タブを押したとき
+     PC版
+     今まで通り1言語だけ表示
+  ========================= */
+
+  function switchDesktopLanguage(language) {
+
+    updateActiveTab(language);
+
+    panels.forEach(panel => {
+
+      const isActive =
+        panel.dataset.panel === language;
+
+      panel.hidden = !isActive;
+
+      panel.classList.toggle(
+        'active',
+        isActive
+      );
+
+    });
+
+    notifyLanguageChange(language);
+
+  }
+
+
+  /* =========================
+     スマホ版
+     3言語を全部表示
+  ========================= */
+
+  function prepareMobilePanels() {
+
+    panels.forEach(panel => {
+
+      panel.hidden = false;
+
+    });
+
+  }
+
+
+  /* =========================
+     タブを押したとき
   ========================= */
 
   buttons.forEach(button => {
@@ -183,41 +180,50 @@ async function init() {
       'click',
       () => {
 
-        const newIndex =
-          languages.indexOf(
-            button.dataset.tab
-          );
+        const language =
+          button.dataset.tab;
 
-        let direction = null;
+        /*
+           スマホ
+           → 対応する言語までヌルッと横移動
+        */
+        if (mobileQuery.matches) {
 
-        if (
-          window.matchMedia(
-            '(max-width: 640px)'
-          ).matches
-        ) {
+          prepareMobilePanels();
+
+          const index =
+            panels.findIndex(
+              panel =>
+                panel.dataset.panel === language
+            );
 
           if (
-            newIndex >
-            currentLanguageIndex
+            index === -1 ||
+            !contentCard
           ) {
-
-            direction = 'left';
-
-          } else if (
-            newIndex <
-            currentLanguageIndex
-          ) {
-
-            direction = 'right';
-
+            return;
           }
 
+          const pageWidth =
+            contentCard.clientWidth;
+
+          contentCard.scrollTo({
+            left: pageWidth * index,
+            behavior: 'smooth'
+          });
+
+          updateActiveTab(language);
+
+          notifyLanguageChange(language);
+
+          return;
         }
 
-        changeLanguage(
-          button.dataset.tab,
-          direction
-        );
+
+        /*
+           PC
+        */
+        switchDesktopLanguage(language);
 
       }
     );
@@ -225,154 +231,170 @@ async function init() {
   });
 
 
-  /* ========================================
-     スマホ左右スワイプ
-  ======================================== */
+  /* =========================
+     横スクロールに合わせて
+     言語タブを自動切替
+  ========================= */
 
-  let touchStartX = 0;
-  let touchStartY = 0;
+  contentCard?.addEventListener(
+    'scroll',
+    () => {
 
-  let touchEndX = 0;
-  let touchEndY = 0;
+      if (!mobileQuery.matches) {
+        return;
+      }
+
+      clearTimeout(scrollTimer);
+
+      /*
+         指で動かしている途中でも
+         一番近い言語を判定
+      */
+
+      const pageWidth =
+        contentCard.clientWidth;
+
+      if (!pageWidth) {
+        return;
+      }
+
+      let index =
+        Math.round(
+          contentCard.scrollLeft /
+          pageWidth
+        );
+
+      index = Math.max(
+        0,
+        Math.min(
+          panels.length - 1,
+          index
+        )
+      );
+
+      const language =
+        panels[index]?.dataset.panel;
+
+      if (language) {
+        updateActiveTab(language);
+      }
 
 
-  function isMobileSwipe() {
+      /*
+         スクロールが止まったら
+         正式に言語変更として通知
+      */
 
-    return window.matchMedia(
-      '(max-width: 640px)'
-    ).matches;
+      scrollTimer = setTimeout(
+        () => {
+
+          const finalWidth =
+            contentCard.clientWidth;
+
+          if (!finalWidth) {
+            return;
+          }
+
+          let finalIndex =
+            Math.round(
+              contentCard.scrollLeft /
+              finalWidth
+            );
+
+          finalIndex = Math.max(
+            0,
+            Math.min(
+              panels.length - 1,
+              finalIndex
+            )
+          );
+
+          const finalLanguage =
+            panels[
+              finalIndex
+            ]?.dataset.panel;
+
+          if (!finalLanguage) {
+            return;
+          }
+
+          updateActiveTab(
+            finalLanguage
+          );
+
+          notifyLanguageChange(
+            finalLanguage
+          );
+
+        },
+        100
+      );
+
+    },
+    {
+      passive: true
+    }
+  );
+
+
+  /* =========================
+     PC ⇄ スマホ切替時の処理
+  ========================= */
+
+  function applyLanguageLayout() {
+
+    if (mobileQuery.matches) {
+
+      /*
+         スマホでは全言語を並べる
+      */
+
+      prepareMobilePanels();
+
+      const index =
+        Math.max(
+          0,
+          panels.findIndex(
+            panel =>
+              panel.dataset.panel ===
+              currentLanguage
+          )
+        );
+
+      requestAnimationFrame(() => {
+
+        if (!contentCard) {
+          return;
+        }
+
+        contentCard.scrollLeft =
+          contentCard.clientWidth *
+          index;
+
+      });
+
+    } else {
+
+      /*
+         PCに戻ったら
+         現在言語だけ表示
+      */
+
+      switchDesktopLanguage(
+        currentLanguage
+      );
+
+    }
 
   }
 
 
-  contentCard?.addEventListener(
-    'touchstart',
-    event => {
-
-      if (!isMobileSwipe()) return;
-
-      /*
-        シークバーやボタン操作中は
-        言語スワイプさせない
-      */
-      if (
-        event.target.closest(
-          '.seek-bar, button, summary, audio'
-        )
-      ) {
-        return;
-      }
-
-
-      const touch =
-        event.changedTouches[0];
-
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-
-      touchEndX = touch.clientX;
-      touchEndY = touch.clientY;
-
-    },
-    {
-      passive: true
-    }
+  mobileQuery.addEventListener(
+    'change',
+    applyLanguageLayout
   );
 
-
-  contentCard?.addEventListener(
-    'touchend',
-    event => {
-
-      if (!isMobileSwipe()) return;
-
-      if (!touchStartX && !touchStartY) {
-        return;
-      }
-
-
-      const touch =
-        event.changedTouches[0];
-
-      touchEndX = touch.clientX;
-      touchEndY = touch.clientY;
-
-
-      const diffX =
-        touchEndX - touchStartX;
-
-      const diffY =
-        touchEndY - touchStartY;
-
-
-      /*
-        横方向に60px以上動き、
-        縦移動よりも明確に横移動した場合だけ
-        言語切替と判定
-      */
-      const isHorizontalSwipe =
-        Math.abs(diffX) >= 60 &&
-        Math.abs(diffX) >
-        Math.abs(diffY) * 1.25;
-
-
-      if (!isHorizontalSwipe) {
-
-        touchStartX = 0;
-        touchStartY = 0;
-
-        return;
-
-      }
-
-
-      /*
-        左へスワイプ
-        日本語 → VN → ID
-      */
-      if (
-        diffX < 0 &&
-        currentLanguageIndex <
-        languages.length - 1
-      ) {
-
-        currentLanguageIndex++;
-
-        changeLanguage(
-          languages[currentLanguageIndex],
-          'left'
-        );
-
-      }
-
-
-      /*
-        右へスワイプ
-        ID → VN → 日本語
-      */
-      else if (
-        diffX > 0 &&
-        currentLanguageIndex > 0
-      ) {
-
-        currentLanguageIndex--;
-
-        changeLanguage(
-          languages[currentLanguageIndex],
-          'right'
-        );
-
-      }
-
-
-      touchStartX = 0;
-      touchStartY = 0;
-
-    },
-    {
-      passive: true
-    }
-  );
+  applyLanguageLayout();
 
 
   initPlayButton();

@@ -1866,12 +1866,15 @@ a {
 }
 
 /* ========================================
-   スマホ：言語切替・スワイプUI
+   スマホ：3言語 ヌルヌル横スクロール
 ======================================== */
 
 @media (max-width: 640px) {
 
-    /* 言語タブを画面上部に残す */
+    /* =========================
+       言語タブ
+    ========================= */
+
     .tabs {
         position: sticky;
         top: 0;
@@ -1893,10 +1896,10 @@ a {
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
 
-        box-shadow: 0 4px 12px rgba(19, 38, 59, 0.08);
+        box-shadow:
+            0 4px 12px rgba(19, 38, 59, 0.08);
     }
 
-    /* 言語ボタンを縦に小さくする */
     .tab-button {
         padding: 9px 2px;
 
@@ -1913,22 +1916,80 @@ a {
 
     .tab-button.active::after {
         bottom: 3px;
+
         width: 18px;
     }
 
-    /* 言語コンテンツ全体 */
-    .content-card {
-        padding: 16px 14px 20px;
 
-        /*
-          縦スクロールを通常どおり使いつつ、
-          JS側で左右スワイプを判定する
-        */
-        touch-action: pan-y;
+    /* =========================
+       横スクロール本体
+    ========================= */
+
+    .content-card {
+        display: flex;
+        align-items: flex-start;
+
+        width: 100%;
+
+        padding: 0;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+
+        -webkit-overflow-scrolling: touch;
+
+        overscroll-behavior-x: contain;
+
+        scrollbar-width: none;
     }
 
-    /* 言語名のスペースを少し縮める */
+    .content-card::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* 上の青ラインはいったん消す */
+    .content-card::before {
+        display: none;
+    }
+
+
+    /* =========================
+       各言語を1画面分にする
+    ========================= */
+
+    .tab-panel {
+        display: flex !important;
+        flex-direction: column;
+
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 100%;
+
+        padding: 18px 14px 22px;
+
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+    }
+
+    /*
+       hidden属性が付いていても
+       スマホでは3言語全部を横に並べる
+    */
+    .tab-panel[hidden] {
+        display: flex !important;
+    }
+
+
+    /* =========================
+       言語名
+    ========================= */
+
     .tab-panel h3 {
+        order: 0;
+
         margin-bottom: 16px;
 
         padding-left: 11px;
@@ -1941,56 +2002,51 @@ a {
         height: 21px;
     }
 
-    /*
-      スマホだけ、
-      プレーヤー → 原稿
-      の順番にする
-    */
-    .tab-panel.active {
-        display: flex;
-        flex-direction: column;
-    }
 
-    .tab-panel.active > h3 {
-        order: 0;
-    }
+    /* =========================
+       プレーヤーを原稿より上へ
+    ========================= */
 
     /*
-      HTML上では1個目が原稿
-      → スマホでは下へ
+       HTMLでは
+       1個目 = 原稿
+       2個目 = 音声
+
+       スマホでは順番を逆転
     */
-    .tab-panel.active > .section-block:nth-of-type(1) {
+
+    .tab-panel > .section-block:nth-of-type(1) {
         order: 2;
-    }
 
-    /*
-      HTML上では2個目がプレーヤー
-      → スマホでは上へ
-    */
-    .tab-panel.active > .section-block:nth-of-type(2) {
-        order: 1;
-    }
-
-    /* プレーヤー上部の余白を縮める */
-    .custom-player {
-        margin-top: 0;
-        padding: 16px 14px;
-    }
-
-    /*
-      プレーヤーの次に原稿が来るので、
-      その間だけ余白を作る
-    */
-    .tab-panel.active > .section-block:nth-of-type(1) {
         margin-top: 16px;
     }
 
-    /* 元の兄弟指定による余白を打ち消す */
+    .tab-panel > .section-block:nth-of-type(2) {
+        order: 1;
+
+        margin-top: 0;
+    }
+
     .section-block + .section-block {
         margin-top: 0;
     }
 
-    /* 原稿ボタンも少しコンパクトに */
+
+    /* =========================
+       プレーヤー省スペース化
+    ========================= */
+
+    .custom-player {
+        margin-top: 0;
+
+        padding: 16px 14px;
+    }
+
+
+    /* =========================
+       原稿ボタン
+    ========================= */
+
     details {
         margin-top: 0;
     }
@@ -1999,45 +2055,5 @@ a {
         padding: 12px 12px 12px 14px;
 
         font-size: 13px;
-    }
-}
-
-
-/* ========================================
-   言語スワイプ時の軽いアニメーション
-======================================== */
-
-@media (max-width: 640px) {
-
-    .tab-panel.language-swipe-left {
-        animation: languageSwipeLeft 0.22s ease;
-    }
-
-    .tab-panel.language-swipe-right {
-        animation: languageSwipeRight 0.22s ease;
-    }
-
-    @keyframes languageSwipeLeft {
-        from {
-            opacity: 0;
-            transform: translateX(18px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    @keyframes languageSwipeRight {
-        from {
-            opacity: 0;
-            transform: translateX(-18px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
     }
 }
