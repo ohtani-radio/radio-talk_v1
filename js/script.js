@@ -64,7 +64,7 @@ async function init() {
   );
 
   const contentCard =
-    document.querySelector('.content-card');
+  document.querySelector('.language-slider');
 
   const mobileQuery =
     window.matchMedia('(max-width: 640px)');

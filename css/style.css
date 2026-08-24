@@ -1866,10 +1866,31 @@ a {
 }
 
 /* ========================================
-   スマホ：3言語 ヌルヌル横スクロール
+   スマホ：言語＋プレーヤー一体型UI
 ======================================== */
 
 @media (max-width: 640px) {
+
+    /* 外側カード */
+    .content-card {
+        display: block;
+
+        padding: 0;
+
+        overflow: hidden;
+
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+
+        box-shadow:
+            0 8px 24px rgba(19, 38, 59, 0.08);
+    }
+
+    .content-card::before {
+        display: none;
+    }
+
 
     /* =========================
        言語タブ
@@ -1880,44 +1901,66 @@ a {
         top: 0;
         z-index: 100;
 
+        display: grid;
         grid-template-columns: repeat(3, 1fr);
 
-        margin-top: 10px;
-        margin-bottom: 10px;
+        margin: 0;
+        padding: 5px;
 
-        padding: 4px;
         gap: 3px;
 
-        background: rgba(255, 255, 255, 0.94);
+        background: rgba(255, 255, 255, 0.96);
 
-        border: 1px solid rgba(214, 225, 235, 0.95);
-        border-radius: 12px;
+        border: 0;
+        border-bottom: 1px solid #e4edf5;
+        border-radius: 0;
+
+        box-shadow: none;
 
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-
-        box-shadow:
-            0 4px 12px rgba(19, 38, 59, 0.08);
     }
 
     .tab-button {
-        padding: 9px 2px;
+        position: relative;
 
-        border-radius: 9px;
+        padding: 10px 2px 12px;
+
+        border-radius: 8px;
 
         font-size: 11px;
         line-height: 1.2;
         white-space: nowrap;
+
+        background: transparent;
     }
 
     .tab-button.active {
+        background: #f5f9fd;
+
+        color: var(--blue);
+
+        box-shadow: none;
+
         transform: none;
     }
 
     .tab-button.active::after {
+        content: "";
+
+        position: absolute;
+
+        left: 50%;
         bottom: 3px;
 
-        width: 18px;
+        width: 28px;
+        height: 3px;
+
+        border-radius: 999px;
+
+        background: var(--blue2);
+
+        transform: translateX(-50%);
     }
 
 
@@ -1925,13 +1968,11 @@ a {
        横スクロール本体
     ========================= */
 
-    .content-card {
+    .language-slider {
         display: flex;
         align-items: flex-start;
 
         width: 100%;
-
-        padding: 0;
 
         overflow-x: auto;
         overflow-y: hidden;
@@ -1946,18 +1987,13 @@ a {
         scrollbar-width: none;
     }
 
-    .content-card::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* 上の青ラインはいったん消す */
-    .content-card::before {
+    .language-slider::-webkit-scrollbar {
         display: none;
     }
 
 
     /* =========================
-       各言語を1画面分にする
+       各言語パネル
     ========================= */
 
     .tab-panel {
@@ -1968,38 +2004,20 @@ a {
         width: 100%;
         min-width: 100%;
 
-        padding: 18px 14px 22px;
+        padding: 16px 14px 20px;
 
         scroll-snap-align: start;
         scroll-snap-stop: always;
     }
 
-    /*
-       hidden属性が付いていても
-       スマホでは3言語全部を横に並べる
-    */
     .tab-panel[hidden] {
         display: flex !important;
     }
 
 
-    /* =========================
-       言語名
-    ========================= */
-
+    /* スマホでは重複する言語名を消す */
     .tab-panel h3 {
-        order: 0;
-
-        margin-bottom: 16px;
-
-        padding-left: 11px;
-
-        font-size: 18px;
-    }
-
-    .tab-panel h3::before {
-        width: 3px;
-        height: 21px;
+        display: none;
     }
 
 
@@ -2007,18 +2025,10 @@ a {
        プレーヤーを原稿より上へ
     ========================= */
 
-    /*
-       HTMLでは
-       1個目 = 原稿
-       2個目 = 音声
-
-       スマホでは順番を逆転
-    */
-
     .tab-panel > .section-block:nth-of-type(1) {
         order: 2;
 
-        margin-top: 16px;
+        margin-top: 14px;
     }
 
     .tab-panel > .section-block:nth-of-type(2) {
@@ -2033,13 +2043,30 @@ a {
 
 
     /* =========================
-       プレーヤー省スペース化
+       プレーヤー
     ========================= */
 
     .custom-player {
         margin-top: 0;
 
-        padding: 16px 14px;
+        padding: 14px;
+
+        background: #f7faff;
+
+        border: 1px solid #dbe7f5;
+        border-radius: 14px;
+    }
+
+    .player-header {
+        margin-bottom: 12px;
+    }
+
+    .player-time {
+        margin-bottom: 8px;
+    }
+
+    .player-controls {
+        margin-bottom: 18px;
     }
 
 
@@ -2055,5 +2082,7 @@ a {
         padding: 12px 12px 12px 14px;
 
         font-size: 13px;
+
+        background: #f7faff;
     }
 }
