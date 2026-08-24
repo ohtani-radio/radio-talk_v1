@@ -1978,6 +1978,7 @@ a {
 
     .language-slider {
         display: flex;
+        flex-direction: row;
         align-items: flex-start;
 
         width: 100%;
@@ -1989,7 +1990,6 @@ a {
         scroll-behavior: smooth;
 
         -webkit-overflow-scrolling: touch;
-
         overscroll-behavior-x: contain;
 
         scrollbar-width: none;
