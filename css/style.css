@@ -2074,3 +2074,21 @@ summary {
     background: #f7faff;
 }
 }
+
+/* =========================
+   今回の漫画
+========================= */
+
+.comic-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.comic-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
