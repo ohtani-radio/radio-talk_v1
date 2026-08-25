@@ -2092,3 +2092,10 @@ summary {
   height: auto;
   border-radius: 12px;
 }
+
+/* PC版：白いカード内側の余白 */
+@media (min-width: 641px) {
+    .content-card {
+        padding: 30px;
+    }
+}
